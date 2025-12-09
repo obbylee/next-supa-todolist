@@ -1,7 +1,5 @@
 "use client";
 
-import React from "react";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -36,7 +34,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { createClient } from "@/lib/supabase/client";
+
+import { useTodoMutation } from "@/hooks/todos";
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -45,7 +44,7 @@ const formSchema = z.object({
 });
 
 export default function CreateTodoFormDialog() {
-  const supabase = createClient();
+  const { mutateAsync, isPending } = useTodoMutation();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -57,21 +56,15 @@ export default function CreateTodoFormDialog() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const { data, error } = await supabase.from("todos").insert(values);
-
-      if (error) {
-        console.error("Error inserting todo:", error.message);
-        alert(`Failed to add todo: ${error.message}`);
-        return;
-      }
-
-      console.log("Inserted todo:", data);
+      await mutateAsync(values);
+      form.reset(); // Reset inputs
       alert("Todo added successfully!");
     } catch (err) {
       console.error("Unexpected error:", err);
       alert("Something went wrong!");
     }
   }
+
   return (
     <Dialog>
       <Form {...form}>
@@ -161,7 +154,9 @@ export default function CreateTodoFormDialog() {
               <DialogClose asChild>
                 <Button variant="outline">Cancel</Button>
               </DialogClose>
-              <Button type="submit">Add Todo</Button>
+              <Button type="submit" disabled={isPending}>
+                {isPending ? "Adding..." : "Add Todo"}
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>
