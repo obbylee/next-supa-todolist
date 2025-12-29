@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -58,10 +59,10 @@ export default function CreateTodoFormDialog() {
     try {
       await mutateAsync(values);
       form.reset(); // Reset inputs
-      alert("Todo added successfully!");
+      toast.success("Todo added successfully!");
     } catch (err) {
       console.error("Unexpected error:", err);
-      alert("Something went wrong!");
+      toast.error("Something went wrong!");
     }
   }
 
