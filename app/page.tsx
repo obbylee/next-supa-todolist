@@ -1,6 +1,3 @@
-import { Input } from "@/components/ui/input";
-
-import CreateTodoFormDialog from "@/components/CreateTodoFormDialog";
 import TodoListTable from "@/components/TodoListTable";
 
 export default function Home() {
@@ -12,15 +9,7 @@ export default function Home() {
             TODO
           </h1>
 
-          <div className="flex flex-col gap-4">
-            <div className="flex gap-4">
-              <Input type="text" placeholder="Search ..." />
-
-              <CreateTodoFormDialog />
-            </div>
-
-            <TodoListTable />
-          </div>
+          <TodoListTable />
         </div>
       </main>
     </div>
