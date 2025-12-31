@@ -27,8 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import CreateTodoFormDialog from "../CreateTodoFormDialog";
-import { Badge } from "@/components/ui/badge";
+import TodoFormDialog from "../todo-form-dialog";
 
 interface DataTableProps {
   data: Todo[];
@@ -65,7 +64,7 @@ export default function DataTable({ data }: DataTableProps) {
           className="max-w-sm"
         />
 
-        <CreateTodoFormDialog />
+        <TodoFormDialog trigger={<Button variant="outline">Add</Button>} />
       </div>
 
       <div className="overflow-hidden">

@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/form";
 
 import { useTodoMutation } from "@/hooks/todos";
+import { Todo } from "@/types/todos";
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -44,11 +45,17 @@ const formSchema = z.object({
   priority: z.enum(["low", "medium", "high"]),
 });
 
-export default function CreateTodoFormDialog() {
+export default function TodoFormDialog({
+  trigger,
+  todo,
+}: {
+  trigger?: React.ReactNode;
+  todo?: Todo;
+}) {
   const { mutateAsync, isPending } = useTodoMutation();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: todo ?? {
       title: "",
       status: "progress",
       priority: "low",
@@ -69,14 +76,12 @@ export default function CreateTodoFormDialog() {
   return (
     <Dialog>
       <Form {...form}>
-        <DialogTrigger asChild>
-          <Button variant="outline">Add</Button>
-        </DialogTrigger>
+        <DialogTrigger asChild>{trigger}</DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Add New Todo</DialogTitle>
+            <DialogTitle>Todo</DialogTitle>
             <DialogDescription>
-              Fill in the details below to create a new task.
+              Fill in the details below to update task.
             </DialogDescription>
           </DialogHeader>
 

@@ -20,3 +20,29 @@ export async function createTodo(values: Omit<Todo, "id">) {
   }
   return data;
 }
+
+export async function updateTodo(
+  id: string,
+  values: Partial<Omit<Todo, "id">>
+) {
+  const { data, error } = await supabase
+    .from("todos")
+    .update(values)
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data as Todo;
+}
+
+export async function deleteTodo(id: string): Promise<void> {
+  const { error } = await supabase.from("todos").delete().eq("id", id);
+
+  if (error) {
+    throw error;
+  }
+}
