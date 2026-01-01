@@ -40,6 +40,7 @@ import { useTodoMutation } from "@/hooks/todos";
 import { Todo } from "@/types/todos";
 
 const formSchema = z.object({
+  id: z.string().optional(),
   title: z.string().min(1, "Title is required"),
   status: z.enum(["progress", "done"]),
   priority: z.enum(["low", "medium", "high"]),
@@ -86,6 +87,18 @@ export default function TodoFormDialog({
           </DialogHeader>
 
           <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+            <FormField
+              control={form.control}
+              name="id"
+              render={({ field }) => (
+                <input
+                  type="hidden"
+                  {...field}
+                  value={field.value?.toString() || ""}
+                />
+              )}
+            />
+
             {/* Title */}
             <FormField
               control={form.control}

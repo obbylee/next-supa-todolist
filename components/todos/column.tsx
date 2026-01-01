@@ -59,6 +59,13 @@ export const columns: ColumnDef<Todo>[] = [
     cell: ({ row }) => {
       const todo = row.original;
 
+      const defaultValues = {
+        id: String(todo.id),
+        title: todo.title,
+        status: todo.status,
+        priority: todo.priority,
+      };
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -76,8 +83,16 @@ export const columns: ColumnDef<Todo>[] = [
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <TodoFormDialog
-              trigger={<DropdownMenuItem>Update</DropdownMenuItem>}
-              todo={todo}
+              trigger={
+                <DropdownMenuItem
+                  onSelect={(e) => {
+                    e.preventDefault(); // Prevent menu from closing before dialog opens
+                  }}
+                >
+                  Update
+                </DropdownMenuItem>
+              }
+              todo={defaultValues}
             />
             <DropdownMenuItem>Delete</DropdownMenuItem>
           </DropdownMenuContent>
