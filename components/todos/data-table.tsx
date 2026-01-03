@@ -31,9 +31,10 @@ import TodoFormDialog from "../todo-form-dialog";
 
 interface DataTableProps {
   data: Todo[];
+  onDeleteRow: (id: string) => void;
 }
 
-export default function DataTable({ data }: DataTableProps) {
+export default function DataTable({ data, onDeleteRow }: DataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
@@ -49,6 +50,9 @@ export default function DataTable({ data }: DataTableProps) {
     state: {
       sorting,
       columnFilters,
+    },
+    meta: {
+      onDeleteRow,
     },
   });
 

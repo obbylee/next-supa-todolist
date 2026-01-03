@@ -1,6 +1,6 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
+import { type ColumnDef, type TableMeta } from "@tanstack/react-table";
 import { type Todo } from "@/types/todos";
 
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,13 @@ import {
 
 import { MoreHorizontal, ArrowUpDown } from "lucide-react";
 import TodoFormDialog from "../todo-form-dialog";
+import DeleteDialog from "../delete-dialog";
+
+declare module "@tanstack/react-table" {
+  interface TableMeta<TData> {
+    onDeleteRow?: (id: string) => void;
+  }
+}
 
 export const columns: ColumnDef<Todo>[] = [
   {
@@ -56,8 +63,13 @@ export const columns: ColumnDef<Todo>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
       const todo = row.original;
+
+      const onDelete = () => {
+        const fn = table?.options?.meta?.onDeleteRow;
+        if (fn) fn(todo.id);
+      };
 
       const defaultValues = {
         id: String(todo.id),
@@ -86,7 +98,7 @@ export const columns: ColumnDef<Todo>[] = [
               trigger={
                 <DropdownMenuItem
                   onSelect={(e) => {
-                    e.preventDefault(); // Prevent menu from closing before dialog opens
+                    e.preventDefault();
                   }}
                 >
                   Update
@@ -94,7 +106,18 @@ export const columns: ColumnDef<Todo>[] = [
               }
               todo={defaultValues}
             />
-            <DropdownMenuItem>Delete</DropdownMenuItem>
+            <DeleteDialog
+              onConfirm={onDelete}
+              trigger={
+                <DropdownMenuItem
+                  onSelect={(e) => {
+                    e.preventDefault();
+                  }}
+                >
+                  Delete
+                </DropdownMenuItem>
+              }
+            />
           </DropdownMenuContent>
         </DropdownMenu>
       );

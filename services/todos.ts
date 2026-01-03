@@ -40,3 +40,9 @@ export async function createTodo(values: Partial<Todo>) {
   }
   return data;
 }
+
+export async function deleteTodo(id: string) {
+  const { error } = await supabase.from("todos").delete().eq("id", id);
+
+  if (error) throw error;
+}
