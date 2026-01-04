@@ -1,6 +1,6 @@
 "use client";
 
-import { type ColumnDef, type TableMeta } from "@tanstack/react-table";
+import { type ColumnDef } from "@tanstack/react-table";
 import { type Todo } from "@/types/todos";
 
 import { Button } from "@/components/ui/button";
@@ -17,13 +17,6 @@ import {
 
 import { MoreHorizontal, ArrowUpDown } from "lucide-react";
 import TodoFormDialog from "../todo-form-dialog";
-import DeleteDialog from "../delete-dialog";
-
-declare module "@tanstack/react-table" {
-  interface TableMeta<TData> {
-    onDeleteRow?: (id: string) => void;
-  }
-}
 
 export const columns: ColumnDef<Todo>[] = [
   {
@@ -66,10 +59,7 @@ export const columns: ColumnDef<Todo>[] = [
     cell: ({ row, table }) => {
       const todo = row.original;
 
-      const onDelete = () => {
-        const fn = table?.options?.meta?.onDeleteRow;
-        if (fn) fn(todo.id);
-      };
+      const openDeleteDialog = table.options.meta?.toggleDeleteDialog;
 
       const defaultValues = {
         id: String(todo.id),
@@ -95,29 +85,12 @@ export const columns: ColumnDef<Todo>[] = [
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <TodoFormDialog
-              trigger={
-                <DropdownMenuItem
-                  onSelect={(e) => {
-                    e.preventDefault();
-                  }}
-                >
-                  Update
-                </DropdownMenuItem>
-              }
+              trigger={<DropdownMenuItem>Update</DropdownMenuItem>}
               todo={defaultValues}
             />
-            <DeleteDialog
-              onConfirm={onDelete}
-              trigger={
-                <DropdownMenuItem
-                  onSelect={(e) => {
-                    e.preventDefault();
-                  }}
-                >
-                  Delete
-                </DropdownMenuItem>
-              }
-            />
+            <DropdownMenuItem onSelect={openDeleteDialog}>
+              Delete
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

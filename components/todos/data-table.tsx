@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 import {
-  ColumnDef,
+  type ColumnDef,
+  type TableMeta,
   ColumnFiltersState,
   SortingState,
   flexRender,
@@ -29,12 +30,24 @@ import {
 } from "@/components/ui/table";
 import TodoFormDialog from "../todo-form-dialog";
 
+declare module "@tanstack/react-table" {
+  interface TableMeta<TData> {
+    toggleDeleteDialog: () => void;
+    onDeleteRow?: (id: string) => void;
+  }
+}
+
 interface DataTableProps {
   data: Todo[];
+  toggleDeleteDialog: () => void;
   onDeleteRow: (id: string) => void;
 }
 
-export default function DataTable({ data, onDeleteRow }: DataTableProps) {
+export default function DataTable({
+  data,
+  toggleDeleteDialog,
+  onDeleteRow,
+}: DataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
@@ -52,6 +65,7 @@ export default function DataTable({ data, onDeleteRow }: DataTableProps) {
       columnFilters,
     },
     meta: {
+      toggleDeleteDialog,
       onDeleteRow,
     },
   });
