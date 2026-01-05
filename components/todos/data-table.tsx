@@ -32,22 +32,16 @@ import TodoFormDialog from "../todo-form-dialog";
 
 declare module "@tanstack/react-table" {
   interface TableMeta<TData> {
-    toggleDeleteDialog: () => void;
-    onDeleteRow?: (id: string) => void;
+    onDeleteClick: (val: Todo) => void;
   }
 }
 
 interface DataTableProps {
   data: Todo[];
-  toggleDeleteDialog: () => void;
-  onDeleteRow: (id: string) => void;
+  onDeleteClick: (val: Todo) => void;
 }
 
-export default function DataTable({
-  data,
-  toggleDeleteDialog,
-  onDeleteRow,
-}: DataTableProps) {
+export default function DataTable({ data, onDeleteClick }: DataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
@@ -65,8 +59,7 @@ export default function DataTable({
       columnFilters,
     },
     meta: {
-      toggleDeleteDialog,
-      onDeleteRow,
+      onDeleteClick,
     },
   });
 

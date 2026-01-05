@@ -41,7 +41,7 @@ export const columns: ColumnDef<Todo>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const status = row.getValue("status") as string;
+      const status = row.original.status;
 
       return (
         <Badge variant={status === "done" ? "default" : "secondary"}>
@@ -58,10 +58,9 @@ export const columns: ColumnDef<Todo>[] = [
     id: "actions",
     cell: ({ row, table }) => {
       const todo = row.original;
+      const onDeleteClick = table.options.meta?.onDeleteClick;
 
-      const openDeleteDialog = table.options.meta?.toggleDeleteDialog;
-
-      const defaultValues = {
+      const todoFormValues = {
         id: String(todo.id),
         title: todo.title,
         status: todo.status,
@@ -79,16 +78,24 @@ export const columns: ColumnDef<Todo>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(todo.id)}
+              onSelect={() => {
+                navigator.clipboard.writeText(String(todo.id));
+              }}
             >
               Copy Task ID
             </DropdownMenuItem>
+
             <DropdownMenuSeparator />
+
             <TodoFormDialog
               trigger={<DropdownMenuItem>Update</DropdownMenuItem>}
-              todo={defaultValues}
+              todo={todoFormValues}
             />
-            <DropdownMenuItem onSelect={openDeleteDialog}>
+
+            <DropdownMenuItem
+              onSelect={() => onDeleteClick?.(todo)}
+              disabled={!onDeleteClick}
+            >
               Delete
             </DropdownMenuItem>
           </DropdownMenuContent>

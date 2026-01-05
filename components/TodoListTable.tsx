@@ -7,12 +7,14 @@ import DeleteDialog from "./delete-dialog";
 import { Todo } from "@/types/todos";
 
 export default function TodoListTable() {
+  const [currentTodo, setCurrentTodo] = useState<Todo | null>(null);
   const [isDeleteOpen, setDeleteOpen] = useState(false);
   const { data: todos, isLoading, error } = useTodos();
   const deleteTodo = useDeleteTodo();
 
-  function handleDeleteDialogOpen() {
-    setDeleteOpen((prev) => !prev);
+  function onDeleteClick(todo: Todo) {
+    setCurrentTodo(todo);
+    setDeleteOpen(true);
   }
 
   if (isLoading) return <div>Loading todos...</div>;
@@ -21,17 +23,17 @@ export default function TodoListTable() {
 
   return (
     <>
-      <DataTable
-        data={todos ?? []}
-        toggleDeleteDialog={handleDeleteDialogOpen}
-        onDeleteRow={(id: string) => deleteTodo.mutate(id)}
-      />
+      <DataTable data={todos ?? []} onDeleteClick={onDeleteClick} />
 
       <DeleteDialog
         open={isDeleteOpen}
-        onOpenChange={setDeleteOpen}
+        onOpenChange={(open) => {
+          setDeleteOpen(open);
+          if (!open) setCurrentTodo(null);
+        }}
         onConfirm={() => {
-          // if (currentTodo) console.log("Delete", currentTodo.id);
+          if (!currentTodo) return;
+          deleteTodo.mutate(currentTodo.id);
           setDeleteOpen(false);
         }}
       />
