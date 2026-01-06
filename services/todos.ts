@@ -7,7 +7,7 @@ export async function fetchTodos() {
   const { data, error } = await supabase
     .from("todos")
     .select()
-    .order("updated_at", { ascending: false });
+    .order("updated_at", { ascending: true });
 
   if (error) {
     throw error;

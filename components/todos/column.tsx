@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { MoreHorizontal, ArrowUpDown } from "lucide-react";
-import TodoFormDialog from "../todo-form-dialog";
 
 export const columns: ColumnDef<Todo>[] = [
   {
@@ -59,6 +58,7 @@ export const columns: ColumnDef<Todo>[] = [
     cell: ({ row, table }) => {
       const todo = row.original;
       const onDeleteClick = table.options.meta?.onDeleteClick;
+      const onUpdateClick = table.options.meta?.onUpdateClick;
 
       const todoFormValues = {
         id: String(todo.id),
@@ -79,7 +79,7 @@ export const columns: ColumnDef<Todo>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
               onSelect={() => {
-                navigator.clipboard.writeText(String(todo.id));
+                navigator.clipboard.writeText(todoFormValues.id);
               }}
             >
               Copy Task ID
@@ -87,13 +87,12 @@ export const columns: ColumnDef<Todo>[] = [
 
             <DropdownMenuSeparator />
 
-            <TodoFormDialog
-              trigger={<DropdownMenuItem>Update</DropdownMenuItem>}
-              todo={todoFormValues}
-            />
+            <DropdownMenuItem onSelect={() => onUpdateClick?.(todoFormValues)}>
+              Update
+            </DropdownMenuItem>
 
             <DropdownMenuItem
-              onSelect={() => onDeleteClick?.(todo)}
+              onSelect={() => onDeleteClick?.(todoFormValues)}
               disabled={!onDeleteClick}
             >
               Delete

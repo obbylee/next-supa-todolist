@@ -33,15 +33,21 @@ import TodoFormDialog from "../todo-form-dialog";
 declare module "@tanstack/react-table" {
   interface TableMeta<TData> {
     onDeleteClick: (val: Todo) => void;
+    onUpdateClick: (val: Todo) => void;
   }
 }
 
 interface DataTableProps {
   data: Todo[];
   onDeleteClick: (val: Todo) => void;
+  onUpdateClick: (val: Todo) => void;
 }
 
-export default function DataTable({ data, onDeleteClick }: DataTableProps) {
+export default function DataTable({
+  data,
+  onDeleteClick,
+  onUpdateClick,
+}: DataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
@@ -60,12 +66,13 @@ export default function DataTable({ data, onDeleteClick }: DataTableProps) {
     },
     meta: {
       onDeleteClick,
+      onUpdateClick,
     },
   });
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex gap-4">
+      <div className="flex gap-4 justify-between">
         <Input
           placeholder="Filter task..."
           value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
@@ -75,7 +82,7 @@ export default function DataTable({ data, onDeleteClick }: DataTableProps) {
           className="max-w-sm"
         />
 
-        <TodoFormDialog trigger={<Button variant="outline">Add</Button>} />
+        <Button variant="outline">Add</Button>
       </div>
 
       <div className="overflow-hidden">

@@ -38,6 +38,7 @@ import {
 
 import { useTodoMutation } from "@/hooks/todos";
 import { Todo } from "@/types/todos";
+import { useEffect } from "react";
 
 const formSchema = z.object({
   id: z.string().optional(),
@@ -47,26 +48,41 @@ const formSchema = z.object({
 });
 
 export default function TodoFormDialog({
-  trigger,
+  open,
+  onOpenChange,
   todo,
 }: {
-  trigger?: React.ReactNode;
-  todo?: Todo;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  todo?: Todo | null;
 }) {
   const { mutateAsync, isPending } = useTodoMutation();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: todo ?? {
+    defaultValues: {
       title: "",
       status: "progress",
       priority: "low",
     },
   });
 
+  useEffect(() => {
+    if (todo) {
+      form.reset(todo);
+    } else {
+      form.reset({
+        title: "",
+        status: "progress",
+        priority: "low",
+      });
+    }
+  }, [todo, open]);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       await mutateAsync(values);
-      form.reset(); // Reset inputs
+      form.reset();
+      onOpenChange(false);
       toast.success("Todo added successfully!");
     } catch (err) {
       console.error("Unexpected error:", err);
@@ -75,10 +91,12 @@ export default function TodoFormDialog({
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <Form {...form}>
-        <DialogTrigger asChild>{trigger}</DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent
+          className="sm:max-w-[425px]"
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
           <DialogHeader>
             <DialogTitle>Todo</DialogTitle>
             <DialogDescription>
@@ -90,13 +108,7 @@ export default function TodoFormDialog({
             <FormField
               control={form.control}
               name="id"
-              render={({ field }) => (
-                <input
-                  type="hidden"
-                  {...field}
-                  value={field.value?.toString() || ""}
-                />
-              )}
+              render={({ field }) => <input type="hidden" {...field} />}
             />
 
             {/* Title */}
@@ -125,7 +137,7 @@ export default function TodoFormDialog({
                     <FormControl>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value}
                       >
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Select status" />
@@ -151,7 +163,7 @@ export default function TodoFormDialog({
                     <FormControl>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value}
                       >
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Select priority" />
@@ -174,7 +186,7 @@ export default function TodoFormDialog({
                 <Button variant="outline">Cancel</Button>
               </DialogClose>
               <Button type="submit" disabled={isPending}>
-                {isPending ? "Adding..." : "Add Todo"}
+                {isPending ? "Saving..." : todo ? "Update Todo" : "Add Todo"}
               </Button>
             </DialogFooter>
           </form>
