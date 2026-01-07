@@ -15,6 +15,10 @@ export default function TodoListTable() {
   const { data: todos, isLoading, error } = useTodos();
   const deleteTodo = useDeleteTodo();
 
+  function onAddClick() {
+    setOpenTodoForm(true);
+  }
+
   function onDeleteClick(todo: Todo) {
     setCurrentTodo(todo);
     setDeleteOpen(true);
@@ -33,6 +37,7 @@ export default function TodoListTable() {
     <>
       <DataTable
         data={todos ?? []}
+        onAddClick={onAddClick}
         onDeleteClick={onDeleteClick}
         onUpdateClick={onUpdateClick}
       />

@@ -39,12 +39,14 @@ declare module "@tanstack/react-table" {
 
 interface DataTableProps {
   data: Todo[];
+  onAddClick: () => void;
   onDeleteClick: (val: Todo) => void;
   onUpdateClick: (val: Todo) => void;
 }
 
 export default function DataTable({
   data,
+  onAddClick,
   onDeleteClick,
   onUpdateClick,
 }: DataTableProps) {
@@ -82,7 +84,9 @@ export default function DataTable({
           className="max-w-sm"
         />
 
-        <Button variant="outline">Add</Button>
+        <Button variant="outline" onClick={onAddClick}>
+          Add
+        </Button>
       </div>
 
       <div className="overflow-hidden">
